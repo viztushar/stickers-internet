@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">stickers</string>
+
+    <string name="json_link">https://gist.githubusercontent.com/viztushar/08845eb0d66572101515b22a471cd54c/raw/52af2924addd5008d85667d13603847ee5b64a00/contents.json</string>
 </resources>
