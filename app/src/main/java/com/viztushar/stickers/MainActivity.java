@@ -1,8 +1,6 @@
 package com.viztushar.stickers;
 
 import android.Manifest;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,9 +8,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.orhanobut.hawk.Hawk;
 import com.viztushar.stickers.adapter.StickerAdapter;
@@ -30,68 +27,52 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements GetStickers.Callbacks {
 
-    private static final int ADD_PACK = 200;
     public static final String EXTRA_STICKER_PACK_ID = "sticker_pack_id";
     public static final String EXTRA_STICKER_PACK_AUTHORITY = "sticker_pack_authority";
     public static final String EXTRA_STICKER_PACK_NAME = "sticker_pack_name";
+    public static final String EXTRA_STICKERPACK = "stickerpack";
     private static final String TAG = MainActivity.class.getSimpleName();
     private final String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-    static String path;
+    public static String path;
     ArrayList<String> strings;
     StickerAdapter adapter;
     ArrayList<StickerPack> stickerPacks = new ArrayList<>();
     List<Sticker> mStickers;
     ArrayList<StickerModel> stickerModels = new ArrayList<>();
     RecyclerView recyclerView;
-    List<String> mEmojis;
+    List<String> mEmojis,mDownloadFiles;
     String android_play_store_link;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         stickerPacks = new ArrayList<>();
-        path = getFilesDir() + "/" + "stickers_asset" + "/" + "100045";
-        stickerPacks.add(new StickerPack("100045", "name",
-                "tushar", "0.png", "", "", "", ""));
+        path = getFilesDir() + "/" + "stickers_asset";
         mStickers = new ArrayList<>();
         stickerModels = new ArrayList<>();
         mEmojis = new ArrayList<>();
+        mDownloadFiles = new ArrayList<>();
         mEmojis.add("");
-        adapter = new StickerAdapter(this, stickerModels);
+        adapter = new StickerAdapter(this, stickerPacks);
         getPermissions();
         setContentView(R.layout.activity_main);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         recyclerView = findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-
-
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: " + Hawk.get("sticker_pack", new ArrayList<StickerPack>()));
-                Intent intent = new Intent();
-                intent.setAction("com.whatsapp.intent.action.ENABLE_STICKER_PACK");
-                intent.putExtra(EXTRA_STICKER_PACK_ID, "100045");
-                intent.putExtra(EXTRA_STICKER_PACK_AUTHORITY, BuildConfig.CONTENT_PROVIDER_AUTHORITY);
-                intent.putExtra(EXTRA_STICKER_PACK_NAME, "name");
-                try {
-                    startActivityForResult(intent, ADD_PACK);
-                } catch (ActivityNotFoundException e) {
-                    Toast.makeText(MainActivity.this, "error", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
 
         new GetStickers(this, this, getResources().getString(R.string.json_link)).execute();
     }
 
 
-    public static void SaveImage(Bitmap finalBitmap, String name) {
+    public static void SaveImage(Bitmap finalBitmap, String name, String identifier) {
 
-        String root = path;
+        String root = path + "/" + identifier;
         File myDir = new File(root);
         myDir.mkdirs();
-        String fname = name + ".webp";
+        String fname = name.replace(".png","") + ".webp";
         File file = new File(myDir, fname);
         if (file.exists()) file.delete();
         try {
@@ -105,12 +86,12 @@ public class MainActivity extends AppCompatActivity implements GetStickers.Callb
         }
     }
 
-    public static void SaveTryImage(Bitmap finalBitmap, String name) {
+    public static void SaveTryImage(Bitmap finalBitmap, String name, String identifier) {
 
-        String root = path;
+        String root = path + "/" + identifier;
         File myDir = new File(root + "/" + "try");
         myDir.mkdirs();
-        String fname = name + ".png";
+        String fname = name.replace(".png","").replace(" ","_") + ".png";
         File file = new File(myDir, fname);
         if (file.exists()) file.delete();
         try {
@@ -145,47 +126,49 @@ public class MainActivity extends AppCompatActivity implements GetStickers.Callb
                     JSONObject jsonResponse = new JSONObject(jsonResult);
                     android_play_store_link = jsonResponse.getString("android_play_store_link");
                     JSONArray jsonMainNode = jsonResponse.optJSONArray("sticker_packs");
+                    Log.d(TAG, "onListLoaded: " + jsonMainNode.length());
                     for (int i = 0; i < jsonMainNode.length(); i++) {
                         JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
+                        Log.d(TAG, "onListLoaded: " + jsonChildNode.getString("name"));
                         stickerPacks.add(new StickerPack(
                                 jsonChildNode.getString("identifier"),
                                 jsonChildNode.getString("name"),
                                 jsonChildNode.getString("publisher"),
-                                getLastBitFromUrl(jsonChildNode.getString("tray_image_file")),
+                                getLastBitFromUrl(jsonChildNode.getString("tray_image_file")).replace(" ","_"),
                                 jsonChildNode.getString("publisher_email"),
                                 jsonChildNode.getString("publisher_website"),
                                 jsonChildNode.getString("privacy_policy_website"),
                                 jsonChildNode.getString("license_agreement_website")
                         ));
                         JSONArray stickers = jsonChildNode.getJSONArray("stickers");
+                        Log.d(TAG, "onListLoaded: " + stickers.length());
                         for (int j = 0; j < stickers.length(); j++) {
                             JSONObject jsonStickersChildNode = stickers.getJSONObject(j);
-                                /*JSONArray emojis = jsonStickersChildNode.getJSONArray("emojis");
-                                for (int k = 0; k < emojis.length(); k++) {
-                                    JSONObject jsonemojisChildNode = jsonMainNode.getJSONObject(k);
-                                    mEmojis.add(jsonemojisChildNode.ge)
-                                }*/
-                            Log.d(TAG, "onListLoaded: " + jsonStickersChildNode.getString("image_file"));
                             mStickers.add(new Sticker(
-                                    getLastBitFromUrl(jsonStickersChildNode.getString("image_file")),
+                                    getLastBitFromUrl(jsonStickersChildNode.getString("image_file")).replace(".png",".webp"),
                                     mEmojis
                             ));
+                            mDownloadFiles.add(jsonStickersChildNode.getString("image_file"));
                         }
-                        stickerPacks.get(i).setStickers(mStickers);
-                        stickerModels.add(new StickerModel(
+                        Log.d(TAG, "onListLoaded: " + mStickers.size());
+                        Hawk.put(jsonChildNode.getString("identifier"), mStickers);
+                        stickerPacks.get(i).setStickers(Hawk.get(jsonChildNode.getString("identifier"),new ArrayList<Sticker>()));
+                        /*stickerModels.add(new StickerModel(
                                 jsonChildNode.getString("name"),
                                 mStickers.get(0).imageFileName,
                                 mStickers.get(1).imageFileName,
                                 mStickers.get(2).imageFileName,
-                                mStickers.get(2).imageFileName
-                        ));
+                                mStickers.get(2).imageFileName,
+                                mDownloadFiles
+                        ));*/
+                        mStickers.clear();
                     }
                     Hawk.put("sticker_packs", stickerPacks);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                adapter = new StickerAdapter(this, stickerModels);
+                adapter = new StickerAdapter(this, stickerPacks);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -194,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements GetStickers.Callb
             e.printStackTrace();
         }
 
-        Log.d(TAG, "onListLoaded: " + stickerModels.size());
+        Log.d(TAG, "onListLoaded: " + stickerPacks.size());
     }
 
     private static String getLastBitFromUrl(final String url) {

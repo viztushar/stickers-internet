@@ -1,5 +1,7 @@
 package com.viztushar.stickers.model;
 
+import java.util.List;
+
 public class StickerModel {
 
     public String stickerName;
@@ -7,13 +9,15 @@ public class StickerModel {
     public String image_two;
     public String image_three;
     public String image_four;
+    public List<String> downloadFile;
 
-    public StickerModel(String stickerName, String image_one, String image_two, String image_three, String image_four) {
+    public StickerModel(String stickerName, String image_one, String image_two, String image_three, String image_four, List<String> downloadFile) {
         this.stickerName = stickerName;
         this.image_one = image_one;
         this.image_two = image_two;
         this.image_three = image_three;
         this.image_four = image_four;
+        this.downloadFile = downloadFile;
     }
 
     public String getStickerName() {
@@ -55,4 +59,13 @@ public class StickerModel {
     public void setImage_four(String image_four) {
         this.image_four = image_four;
     }
+
+    public List<String> getDownloadFile() {
+        return downloadFile;
+    }
+
+    public void setDownloadFile(List<String> downloadFile) {
+        this.downloadFile = downloadFile;
+    }
 }
+

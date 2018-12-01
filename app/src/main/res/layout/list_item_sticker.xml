@@ -84,6 +84,13 @@
             </LinearLayout>
         </LinearLayout>
 
+        <RelativeLayout
+            android:id="@+id/download_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            tools:ignore="ObsoleteLayoutParam">
+
         <ImageView
             android:id="@+id/download"
             android:layout_width="56dp"
@@ -92,11 +99,35 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:tint="@color/colorAccent"
-            app:srcCompat="@drawable/ic_arrow_downward" />
+            app:srcCompat="@drawable/ic_arrow_downward"
+            tools:ignore="ObsoleteLayoutParam"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"/>
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@color/colorAccent"
+            android:maxHeight="30dp"
+            android:minHeight="30dp"
+            android:minWidth="30dp"
+            android:maxWidth="30dp"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_centerInParent="true" />
+
+        </RelativeLayout>
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

@@ -9,9 +9,11 @@ import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -28,7 +30,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-    public class StickerContentProvider extends ContentProvider {
+@RequiresApi(api = Build.VERSION_CODES.KITKAT)
+public class StickerContentProvider extends ContentProvider {
 
 
     /**
@@ -72,6 +75,7 @@ import java.util.Objects;
 
     private List<StickerPack> stickerPackList = new ArrayList<>();
 
+
     @Override
     public boolean onCreate() {
         Hawk.init(getContext()).build();
@@ -107,7 +111,7 @@ import java.util.Objects;
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
         final int code = MATCHER.match(uri);
-        //Log.d(TAG, "query: " + code + uri);
+        Log.d(TAG, "query: " + code + uri);
         if (code == METADATA_CODE) {
             return getPackForAllStickerPacks(uri);
         } else if (code == METADATA_CODE_FOR_SINGLE_PACK) {
@@ -214,7 +218,7 @@ import java.util.Objects;
        /* if (stickerPackList == null) {
             readContentFile(Objects.requireNonNull(getContext()));
         }*/
-        return (List)Hawk.get("sticker_pack",new ArrayList<StickerPack>());
+        return (List)Hawk.get("sticker_packs",new ArrayList<StickerPack>());
     }
 
     private Cursor getPackForAllStickerPacks(@NonNull Uri uri) {
@@ -260,6 +264,7 @@ import java.util.Objects;
             builder.add(stickerPack.privacyPolicyWebsite);
             builder.add(stickerPack.licenseAgreementWebsite);
         }
+        Log.d(TAG, "getStickerPackInfo: " + stickerPackList.size());
         cursor.setNotificationUri(Objects.requireNonNull(getContext()).getContentResolver(), uri);
         return cursor;
     }
