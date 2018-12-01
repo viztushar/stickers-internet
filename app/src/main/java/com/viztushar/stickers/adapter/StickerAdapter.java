@@ -133,7 +133,7 @@ public class StickerAdapter extends RecyclerView.Adapter<StickerAdapter.ViewHold
                                         Glide.with(context)
                                                 .asBitmap()
                                                 .apply(new RequestOptions().override(512, 512))
-                                                .load(url + s.imageFileName)
+                                                .load(url + s.imageFileName.replace(".webp",".png"))
                                                 .addListener(new RequestListener<Bitmap>() {
                                                     @Override
                                                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
@@ -156,8 +156,8 @@ public class StickerAdapter extends RecyclerView.Adapter<StickerAdapter.ViewHold
                                                     }
                                                 }).submit();
                                     }
-
-                                    viewHolder.rl.setVisibility(View.INVISIBLE);
+                                    viewHolder.download.setVisibility(View.INVISIBLE);
+                                    viewHolder.bar.setVisibility(View.INVISIBLE);
                                 }
                             }
                     );

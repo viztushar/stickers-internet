@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements GetStickers.Callb
         String root = path + "/" + identifier;
         File myDir = new File(root);
         myDir.mkdirs();
-        String fname = name.replace(".png","") + ".webp";
+        String fname = name;
         File file = new File(myDir, fname);
         if (file.exists()) file.delete();
         try {
