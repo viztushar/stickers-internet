@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements GetStickers.Callb
                         }
                         Log.d(TAG, "onListLoaded: " + mStickers.size());
                         Hawk.put(jsonChildNode.getString("identifier"), mStickers);
+                        stickerPacks.get(i).setAndroidPlayStoreLink(android_play_store_link);
                         stickerPacks.get(i).setStickers(Hawk.get(jsonChildNode.getString("identifier"),new ArrayList<Sticker>()));
                         /*stickerModels.add(new StickerModel(
                                 jsonChildNode.getString("name"),
