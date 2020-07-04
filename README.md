@@ -1,6 +1,6 @@
 # stickers-internet
 
-i dont thing so im goint to mantain this repo but you can check flutter base [stickers_internet](https://github.com/viztushar/flutter_whatsapp_stickers_internet).
+i don't think so i'm going to maintain this repo but you can check flutter base [stickers_internet](https://github.com/viztushar/flutter_whatsapp_stickers_internet) more active there.
 
 
 # contents.json Example
